@@ -3,6 +3,38 @@
 #include<cstdlib>
 using namespace std;
 
+// attack:
+//   roll 3x2 dice
+//   calculate player loss
+
+// battle_over:
+//   attacker_count <=2  or defender_count == 0
+
+// battle_win:
+//   attacker_count > defender_count
+
+// sim_battle:
+//   store player count
+//   do call attack
+//   until battle_over
+//   restore player count
+//   return battle_win
+
+// run_full_sim:
+//   for i = 1 to 10000
+//     call sim_battle
+//     tally win/lose
+//   print wins divided by 10000 as %
+
+// real_battle:
+//   ask attacker & defender soldier count
+//   do
+//     call run_full_sim
+//     ask if player wants to attack
+//     if no, break
+//     call attack
+//   until battle_over
+
 void initdice(){
 	srand(unsigned(time(NULL)));
 }
