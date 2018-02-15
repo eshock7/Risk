@@ -17,21 +17,30 @@ void swap(int array[], int x, int y){
 }
 const int numrolls = 3;
 int main(){
-	int rolls[numrolls];
+	int attacker[numrolls];
+	int defender[numrolls];
 	initdice();
 	for (int i = 0; i < numrolls; i++) {
-		rolls[i] = rolldice();
+		attacker[i] = rolldice();
+		defender[i] = rolldice();
 	}
 	for (int i = 0; i < numrolls - 1; i++) {
 		for (int j = 0; j < numrolls - i - 1; j++){
-			if (rolls[j] > rolls[j + 1]){
-				swap(rolls, j, j + 1);
+			if (attacker[j] > attacker[j + 1]){
+				swap(attacker, j, j + 1);
 			}
 		}
 	}
-	cout << rolls[0] << " is the smallest roll\n";
-	cout << rolls[1] << " is the middle roll\n";
-	cout << rolls[2] << " is the greatest roll\n";
+	for (int i = 0; i < numrolls - 1; i++) {
+		for (int j = 0; j < numrolls - i - 1; j++){
+			if (defender[j] > defender[j + 1]){
+				swap(defender, j, j + 1);
+			}
+		}
+	}
+	cout << (attacker[0] > defender[0] ? "attacker" : "defender") << " wins first battle " << attacker[0] << " to " << defender[0] << "\n";
+	cout << (attacker[1] > defender[1] ? "attacker" : "defender") << " wins second battle " << attacker[1] << " to " << defender[1] << "\n";
+	cout << (attacker[2] > defender[2] ? "attacker" : "defender") << " wins last battle " << attacker[2] << " to " << defender[2] << "\n";
 
 	int f;
 	cin >> f;
