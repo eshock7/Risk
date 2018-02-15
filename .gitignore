@@ -1,0 +1,13 @@
+
+*.opensdf
+*.exe
+*.pdb
+*.ilk
+*.ipch
+*.sdf
+*.obj
+*.log
+*.tlog
+*.idb
+*.pch
+*.suo
