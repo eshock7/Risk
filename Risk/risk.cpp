@@ -1,10 +1,13 @@
 #include<iostream>
+#include<sstream>
+#include<string>
 #include<time.h>
 #include<cstdlib>
 using namespace std;
 
 // attack:
-//   roll 3x2 dice
+//   ask player for # of soldiers 
+//   roll #of soldier<=3 dice
 //   calculate player loss
 
 // battle_over:
@@ -26,15 +29,19 @@ using namespace std;
 //     tally win/lose
 //   print wins divided by 10000 as %
 
-// real_battle:
-//   ask attacker & defender soldier count
-//   do
-//     call run_full_sim
-//     ask if player wants to attack
-//     if no, break
-//     call attack
-//   until battle_over
+void realbattle();
+void attack(int *ptr_attacksoldiers, int *ptr_defendsoldiers);
+void attackrolls(int attackernumrolls, int defendernumrolls, int *ptr_attacklosses, int *ptr_defendlosses);
+bool battleover(int attacksoldiers, int defendsoldiers);
 
+int main(){
+	realbattle();
+	string temp;
+	cin >> temp;
+	return 0;
+}
+
+// Dice and sorting utility functions.
 void initdice(){
 	srand(unsigned(time(NULL)));
 }
@@ -47,33 +54,133 @@ void swap(int array[], int x, int y){
 	array[x] = array[y];
 	array[y] = temp;
 }
-const int numrolls = 3;
-int main(){
-	int attacker[numrolls];
-	int defender[numrolls];
-	initdice();
-	for (int i = 0; i < numrolls; i++) {
-		attacker[i] = rolldice();
-		defender[i] = rolldice();
+
+// real_battle:
+//   ask attacker & defender soldier count
+//   do
+//     call run_full_sim
+//     ask if player wants to attack
+//     if no, break
+//     call attack
+//   until battle_over
+void realbattle(){
+	int attacksoldiers = 0;
+	int defendsoldiers = 0;
+	while (attacksoldiers < 2){
+		cout << "How many soldiers are attacking? ";
+		cin >> attacksoldiers;
+		if (cin.fail()){
+			cin.clear();
+			cin.ignore(80, '\n');
+		}
 	}
-	for (int i = 0; i < numrolls - 1; i++) {
-		for (int j = 0; j < numrolls - i - 1; j++){
-			if (attacker[j] > attacker[j + 1]){
+	while (defendsoldiers < 1){
+		cout << "How many soldiers are defending? ";
+		cin >> defendsoldiers;
+		if (cin.fail()){
+			cin.clear();
+			cin.ignore(80, '\n');
+		}
+	}
+	do{
+		string response = "";
+		cout << "There are " << attacksoldiers << " attacking.\n";
+		cout << "There are " << defendsoldiers << " defending.\n";
+		//TODO: RUN SIMULATION
+		while (response != "y" && response != "n"){
+			cout << "Do you want to attack?(y/n) ";
+			cin >> response;
+		}
+		if (response == "n")
+			break;
+		attack(&attacksoldiers, &defendsoldiers);
+	} while (!battleover(attacksoldiers, defendsoldiers));
+	cout << "The battle is over!  Attacker has " << attacksoldiers << ". Defender has " << defendsoldiers << ".\n";
+	if (defendsoldiers == 0)
+		cout << "Attacker wins!\n";
+	else
+		cout << "Defender wins!\n";
+}
+
+// Roll dice.  Deduct soldiers by loss counts.
+void attack(int *ptr_attacksoldiers, int *ptr_defendsoldiers){
+	int attacksoldiers = *ptr_attacksoldiers;
+	int defendsoldiers = *ptr_defendsoldiers;
+	int attacklosses, defendlosses;
+	attackrolls(attacksoldiers - 1, defendsoldiers, &attacklosses, &defendlosses);
+	cout << "Attacker lost " << attacklosses << " soldiers and defender lost " << defendlosses << " soldiers.\n";
+	attacksoldiers -= attacklosses;
+	defendsoldiers -= defendlosses;
+	*ptr_attacksoldiers = attacksoldiers;
+	*ptr_defendsoldiers = defendsoldiers;
+}
+
+// Take the number of soldiers who can attack or defend.  Limit 3.  Roll dice and sort descending.
+// Compare pairs of dice.  Attacker must have greater to win.  Tie goes to defender.
+// Count losses.
+void attackrolls(int attackernumrolls,int defendernumrolls, int *ptr_attacklosses, int *ptr_defendlosses){
+	const int maxrolls = 3;
+	int attacker[maxrolls];
+	int defender[maxrolls];
+	int usablerolls;
+	int attackerlosses = 0;
+	int defenderlosses = 0;
+
+	if (attackernumrolls > maxrolls)
+		attackernumrolls = maxrolls;
+	if (defendernumrolls > maxrolls)
+		defendernumrolls = maxrolls;
+	if (attackernumrolls < defendernumrolls)
+		usablerolls = attackernumrolls;
+	else
+		usablerolls = defendernumrolls;
+
+	initdice();
+	for (int i = 0; i < attackernumrolls; i++)
+		attacker[i] = rolldice();
+	for (int i = 0; i < defendernumrolls; i++)
+		defender[i] = rolldice();
+
+	for (int i = 0; i < attackernumrolls - 1; i++) {
+		for (int j = 0; j < attackernumrolls - i - 1; j++){
+			if (attacker[j] < attacker[j + 1]){
 				swap(attacker, j, j + 1);
 			}
 		}
 	}
-	for (int i = 0; i < numrolls - 1; i++) {
-		for (int j = 0; j < numrolls - i - 1; j++){
-			if (defender[j] > defender[j + 1]){
+	for (int i = 0; i < defendernumrolls - 1; i++) {
+		for (int j = 0; j < defendernumrolls - i - 1; j++){
+			if (defender[j] < defender[j + 1]){
 				swap(defender, j, j + 1);
 			}
 		}
 	}
-	cout << (attacker[0] > defender[0] ? "attacker" : "defender") << " wins first battle " << attacker[0] << " to " << defender[0] << "\n";
-	cout << (attacker[1] > defender[1] ? "attacker" : "defender") << " wins second battle " << attacker[1] << " to " << defender[1] << "\n";
-	cout << (attacker[2] > defender[2] ? "attacker" : "defender") << " wins last battle " << attacker[2] << " to " << defender[2] << "\n";
 
-	int f;
-	cin >> f;
+	cout << "Attacker rolled";
+	for (int i = 0; i < attackernumrolls; i++) {
+		cout << " " << attacker[i];
+	}
+	cout << ".\n";
+	cout << "Defender rolled";
+	for (int i = 0; i < defendernumrolls; i++) {
+		cout << " " << defender[i];
+	}
+	cout << ".\n";
+
+	for (int i = 0; i < usablerolls; i++) {
+		if (attacker[i] > defender[i])
+			defenderlosses++;
+		else
+			attackerlosses++;
+	}
+	*ptr_attacklosses = attackerlosses;
+	*ptr_defendlosses = defenderlosses;
+}
+
+// Take the number of soldiers for each side.  Battle isn't over until attacker has 1 or defender has 0.
+bool battleover(int attacksoldiers, int defendsoldiers){
+	if (attacksoldiers < 2 || defendsoldiers == 0)
+		return true;
+	else
+		return false;
 }
