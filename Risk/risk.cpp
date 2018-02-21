@@ -11,10 +11,10 @@ using namespace std;
 //   calculate player loss
 
 // battle_over:
-//   attacker_count <2  or defender_count == 0
+//   attacker_count <=2  or defender_count == 0
 
 // battle_win:
-//     defender_count <= 0
+//   attacker_count > defender_count
 
 // sim_battle:
 //   store player count
