@@ -36,6 +36,9 @@ void initdice(){
 //     if no, break
 //     call attack
 //   until battle_over
+
+//This is the intro. the player enters how many soldiers are on each side
+//The program then proceeds to run the simulations with the given numbers
 void realbattle(){
 	int attacksoldiers = 0;
 	int defendsoldiers = 0;
@@ -122,7 +125,7 @@ void attack(int *ptr_attacksoldiers, int *ptr_defendsoldiers,bool print){
 }
 
 // Take the number of soldiers who can attack or defend.  Limit 3.  Roll dice and sort descending.
-// Compare pairs of dice.  Attacker must have greater to win.  Tie goes to defender.
+// Compare pairs of dice. Attacker must have greater to win.  Tie goes to defender.
 // Count losses.
 void attackrolls(int attackernumrolls,int defendernumrolls, int *ptr_attacklosses, int *ptr_defendlosses,bool print){
 	const int maxrolls = 3;
